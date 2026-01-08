@@ -1,1 +1,90 @@
+! ========================================
+! Switch-2 Configuration
+! Network Design, ACLs & Firewalls
+! Role: Core switch hosting Sales department
+! ========================================
+!
+
+version 15.0
+no service timestamps log datetime msec
+no service timestamps debug datetime msec
+no service password-encryption
+!
+hostname Switch-2
+!
+!
+! ===== VLAN CONFIGURATION =====
+!
+vlan 10
+ name Admin
+!
+vlan 20
+ name IT
+!
+vlan 30
+ name Finance
+!
+vlan 40
+ name Sales
+!
+!
+! ===== ACCESS PORTS =====
+!
+! Sales Department
+interface FastEthernet0/1
+ description Sales-PC1
+ switchport mode access
+ switchport access vlan 40
+!
+interface FastEthernet0/2
+ description Sales-PC2
+ switchport mode access
+ switchport access vlan 40
+!
+!
+! ===== TRUNK PORTS =====
+!
+! Trunk to Router-2 (Primary)
+interface GigabitEthernet0/1
+ description Trunk to Router-2
+ switchport mode trunk
+ switchport trunk allowed vlan 10,20,30,40
+!
+! Trunk to Router-1 (Redundancy) - Optional
+interface GigabitEthernet0/2
+ description Trunk to Router-1
+ switchport mode trunk
+ switchport trunk allowed vlan 10,20,30,40
+!
+!
+! ===== ETHERCHANNEL CONFIGURATION =====
+!
+! EtherChannel Member Ports to Switch-1
+interface range FastEthernet0/23-24
+ description EtherChannel to Switch-1
+ switchport mode trunk
+ switchport trunk allowed vlan 10,20,30,40
+ channel-group 1 mode active
+!
+! Port-Channel Logical Interface
+interface Port-channel1
+ description Logical EtherChannel to Switch-1
+ switchport mode trunk
+ switchport trunk allowed vlan 10,20,30,40
+!
+!
+! ===== VERIFICATION COMMANDS =====
+!
+! show vlan brief
+! show interfaces trunk
+! show etherchannel summary
+! show etherchannel port-channel
+!
+line con 0
+line vty 0 4
+ login
+line vty 5 15
+ login
+!
+end
 
